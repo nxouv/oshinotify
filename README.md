@@ -1,7 +1,11 @@
-# Tauri + React + Typescript
+推しの配信を通知するアプリです。
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+YouTube、Twitch、ツイキャスに対応。
+配信者ごとに設定できて、通知音も変更できます。
 
-## Recommended IDE Setup
+YouTubeライブの通知が公式APIだと１日に100回までしか叩けないことがわかり、
+数が少なすぎてリアルタイム通知を断念し、スクレイピングに切り替えました。
+配信が始まったらAPIを叩いて詳細を取得します。
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+しかしスクレイピングをしてしまうので公開を断念し、
+ひっそりここでアーカイブとして公開することとにしましたorz
