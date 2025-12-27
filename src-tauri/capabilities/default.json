@@ -1,0 +1,60 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default permissions",
+  "windows": [
+    "main",
+    "notification-*"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-destroy",
+    "core:window:allow-hide",
+    "core:window:allow-show",
+    "core:window:allow-set-focus",
+    "core:window:allow-start-dragging",
+    "core:webview:allow-create-webview-window",
+    "opener:default",
+    "opener:allow-open-url",
+    "shell:allow-open",
+    "store:allow-get",
+    "store:allow-set",
+    "store:allow-save",
+    "store:allow-load",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "dialog:allow-open",
+    "fs:allow-read-file",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "$AUDIO/**",
+        "$DOWNLOAD/**",
+        "$DOCUMENT/**",
+        "$HOME/**",
+        "$DESKTOP/**",
+        "$MUSIC/**",
+        "$VIDEO/**",
+        "**"
+      ]
+    },
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        { "url": "https://www.youtube.com/*" },
+        { "url": "https://www.googleapis.com/*" },
+        { "url": "https://i.ytimg.com/*" },
+        { "url": "https://yt3.ggpht.com/*" },
+        { "url": "https://id.twitch.tv/*" },
+        { "url": "https://api.twitch.tv/*" },
+        { "url": "https://apiv2.twitcasting.tv/*" },
+        { "url": "https://nxouv.github.io/*" }
+      ]
+    }
+  ]
+}

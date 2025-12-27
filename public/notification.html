@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        #notification {
+            width: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
+            border-radius: 14px;
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #notification:hover {
+            border-color: #333;
+        }
+
+        .content {
+            display: flex;
+            gap: 14px;
+            padding: 14px;
+        }
+
+        .thumbnail-container {
+            width: 120px;
+            height: 68px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #252525;
+        }
+
+        #thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        #name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            min-width: 0;
+        }
+
+        #label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #888;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background: #ff0033;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        #title {
+            font-size: 13px;
+            color: #b0b0b0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+            margin-top: 6px;
+        }
+
+        #platform {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 5px;
+            color: #fff;
+            width: fit-content;
+            margin-top: 8px;
+        }
+
+        #platform.youtube {
+            background: #ff0033;
+        }
+
+        #platform.twitch {
+            background: #9146ff;
+        }
+
+        #platform.twitcasting {
+            background: #0eaaff;
+        }
+
+        #closeBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 22px;
+            height: 22px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            line-height: 1;
+            transition: all 0.15s ease;
+            opacity: 0;
+        }
+
+        #notification:hover #closeBtn {
+            opacity: 1;
+        }
+
+        #closeBtn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="notification">
+        <button id="closeBtn">×</button>
+        <div class="content">
+            <div class="thumbnail-container">
+                <img id="thumbnail" src="" alt="">
+            </div>
+            <div class="info">
+                <div>
+                    <div class="header">
+                        <span id="name"></span>
+                        <span id="label"></span>
+                    </div>
+                    <p id="title"></p>
+                </div>
+                <span id="platform"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URLパラメータからデータを取得
+        const params = new URLSearchParams(window.location.search);
+        const dataParam = params.get('data');
+
+        let notificationData = {};
+
+        if (dataParam) {
+            try {
+                notificationData = JSON.parse(decodeURIComponent(dataParam));
+            } catch (e) {
+                console.error('Failed to parse notification data:', e);
+            }
+        }
+
+        // 表示時間（秒）、0は自動で閉じない
+        const duration = notificationData.duration ?? 5;
+
+        // データを表示に反映
+        const nameEl = document.getElementById('name');
+        const labelEl = document.getElementById('label');
+        const titleEl = document.getElementById('title');
+        const platformEl = document.getElementById('platform');
+        const thumbnailEl = document.getElementById('thumbnail');
+
+        if (notificationData.streamerName) {
+            nameEl.textContent = notificationData.streamerName;
+        }
+
+        if (notificationData.streamerId === 'system') {
+            // システム通知の場合はラベルを非表示
+            labelEl.style.display = 'none';
+        } else {
+            labelEl.innerHTML = '<span class="live-dot"></span> 配信中';
+        }
+
+        if (notificationData.title) {
+            titleEl.textContent = notificationData.title;
+        }
+
+        if (notificationData.platform) {
+            platformEl.textContent = {
+                'youtube': 'YouTube',
+                'twitch': 'Twitch',
+                'twitcasting': 'ツイキャス'
+            }[notificationData.platform] || notificationData.platform;
+            platformEl.className = notificationData.platform;
+        }
+
+        if (notificationData.thumbnail) {
+            thumbnailEl.src = notificationData.thumbnail;
+        }
+
+        // Tauri APIを待つ
+        async function waitForTauri() {
+            while (!window.__TAURI__) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            return window.__TAURI__;
+        }
+
+        // ウィンドウを閉じる
+        async function closeWindow() {
+            try {
+                const tauri = await waitForTauri();
+                const window = tauri.window.getCurrentWindow();
+                await window.destroy();
+            } catch (error) {
+                console.error('Failed to close window:', error);
+            }
+        }
+
+        // クリックでURLを開く
+        document.getElementById('notification').addEventListener('click', async (e) => {
+            if (e.target.id === 'closeBtn') return;
+
+            if (notificationData.url) {
+                try {
+                    const tauri = await waitForTauri();
+                    await tauri.opener.openUrl(notificationData.url);
+                } catch (error) {
+                    console.error('Failed to open URL:', error);
+                }
+            }
+
+            await closeWindow();
+        });
+
+        // 閉じるボタン
+        document.getElementById('closeBtn').addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await closeWindow();
+        });
+
+        // 自動で閉じる機能
+        let autoCloseTimeout = null;
+
+        function startAutoClose(seconds) {
+            if (seconds > 0) {
+                autoCloseTimeout = setTimeout(async () => {
+                    await closeWindow();
+                }, seconds * 1000);
+            }
+        }
+
+        function stopAutoClose() {
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
+            }
+        }
+
+        // 初期の自動閉じタイマー開始
+        startAutoClose(duration);
+
+        // ホバー中は自動閉じを停止
+        document.getElementById('notification').addEventListener('mouseenter', () => {
+            stopAutoClose();
+        });
+
+        document.getElementById('notification').addEventListener('mouseleave', () => {
+            // ホバー解除後は3秒で閉じる（duration が 0 でない場合）
+            if (duration > 0) {
+                startAutoClose(3);
+            }
+        });
+    </script>
+</body>
+
+</html>
